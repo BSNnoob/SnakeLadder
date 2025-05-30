@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using Unity.Cinemachine;
 public class GameControl : MonoBehaviour
 {
     private static GameObject whoWinsTextShadow, player1MoveText, player2MoveText, player3MoveText, player4MoveText;
@@ -24,6 +24,29 @@ public class GameControl : MonoBehaviour
     public static bool useDoubleDice = false;
     public static bool hasReceivedDoubleDice = false;
     private GameObject dice2Instance;
+
+    public CinemachineCamera cmCamera;
+
+    public void UpdateCameraTarget()
+    {
+        GameObject player = null;
+
+        switch (whosTurn)
+        {
+            case 1: player = GameObject.Find("Player1"); break;
+            case 2: player = GameObject.Find("Player2"); break;
+            case 3: player = GameObject.Find("Player3"); break;
+            case 4: player = GameObject.Find("Player4"); break;
+        }
+
+        if (player != null && cmCamera != null)
+        {
+            Transform followTarget = player.transform.Find("CameraFollowPoint");
+            if (followTarget == null) followTarget = player.transform;
+
+            cmCamera.Follow = followTarget;
+        }
+    }
 
     void Start()
     {
@@ -53,6 +76,7 @@ public class GameControl : MonoBehaviour
         player2MoveText.SetActive(false);
         player3MoveText.SetActive(false);
         player4MoveText.SetActive(false);
+        UpdateCameraTarget();
     }
 
     void Update()
@@ -63,6 +87,8 @@ public class GameControl : MonoBehaviour
             player1MoveText.SetActive(false);
             player2MoveText.SetActive(true);
             whosTurn++;
+            UpdateCameraTarget();
+
             player1StartWaypoint = player1.GetComponent<FollowThePath>().waypointIndex - 1;
 
             if (player1.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
@@ -80,6 +106,7 @@ public class GameControl : MonoBehaviour
             player2MoveText.SetActive(false);
             player3MoveText.SetActive(true);
             whosTurn++;
+            UpdateCameraTarget();
             player2StartWaypoint = player2.GetComponent<FollowThePath>().waypointIndex - 1;
 
             if (player2.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
@@ -97,6 +124,7 @@ public class GameControl : MonoBehaviour
             player3MoveText.SetActive(false);
             player4MoveText.SetActive(true);
             whosTurn++;
+            UpdateCameraTarget();
             player3StartWaypoint = player3.GetComponent<FollowThePath>().waypointIndex - 1;
 
             if (player3.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
@@ -114,6 +142,7 @@ public class GameControl : MonoBehaviour
             player4MoveText.SetActive(false);
             player1MoveText.SetActive(true);
             whosTurn = 1;
+            UpdateCameraTarget();
             player4StartWaypoint = player4.GetComponent<FollowThePath>().waypointIndex - 1;
 
             if (player4.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)

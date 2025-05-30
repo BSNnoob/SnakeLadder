@@ -31,6 +31,19 @@ public class DiceScript : MonoBehaviour
             DiceCheckZoneScript.dice1 = 0;
             DiceCheckZoneScript.dice2 = 0;
             DiceCheckZoneScript.dice1Done = false;
+
+            GameControl gc = GameObject.Find("GameControl").GetComponent<GameControl>();
+            string playerName = $"Player{gc.whosTurn}";
+            GameObject player = GameObject.Find(playerName);
+            if (player != null)
+            {
+                Vector3 spawnOffset = Vector3.up * 2f;
+                transform.position = player.transform.position + spawnOffset;
+            }
+            else
+            {
+                transform.position = new Vector3(0, 2, 0); // fallback
+            }
             if (GameControl.useDoubleDice)
             {
                 DiceCheckZoneScript.dice2Done = false;
@@ -43,7 +56,6 @@ public class DiceScript : MonoBehaviour
             float dirX = Random.Range(0, 500);
             float dirY = Random.Range(0, 500);
             float dirZ = Random.Range(0, 500);
-            transform.position = new Vector3(0, 2, 0);
             transform.rotation = Quaternion.identity;
             rb.AddForce(transform.up * 500);
             rb.AddTorque(dirX, dirY, dirZ);

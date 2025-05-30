@@ -13,6 +13,7 @@ public class GameControl : MonoBehaviour
     public static bool gameOver = false;
     public int whosTurn;
     private player1Inventory player1InventoryScript;
+    private player2Inventory player2InventoryScript;
     public static bool useDoubleDice = false;
     public static bool hasReceivedDoubleDice = false;
     private GameObject dice2Instance;
@@ -22,6 +23,7 @@ public class GameControl : MonoBehaviour
     void Start()
     {
         player1InventoryScript = GameObject.Find("Player1").GetComponent<player1Inventory>();
+        player2InventoryScript = GameObject.Find("Player2").GetComponent<player2Inventory>();
         whoWinsTextShadow = GameObject.Find("WhoWinsText");
         player1MoveText = GameObject.Find("Player1MoveText");
         player2MoveText = GameObject.Find("Player2MoveText");
@@ -62,13 +64,19 @@ public class GameControl : MonoBehaviour
         }
 
         if (player2.GetComponent<FollowThePath>().waypointIndex >
-        player2StartWaypoint + diceSideThrown)
+        player2StartWaypoint + diceSideThrown && whosTurn == -1)
         {
             player2.GetComponent<FollowThePath>().moveAllowed = false;
             player2MoveText.gameObject.SetActive(false);
             player1MoveText.gameObject.SetActive(true);
             whosTurn *= -1;
             player2StartWaypoint = player2.GetComponent<FollowThePath>().waypointIndex - 1;
+            if (player2.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
+            {
+                Inventory player2Inventory = player2InventoryScript.GetInventory();
+                player2Inventory.AddItem(new Item { itemType = Item.ItemType.DoubleDice });
+                hasReceivedDoubleDice = true;
+            }
             GameObject.Find("DiceCheckZone").GetComponent<DiceCheckZoneScript>().rolled = true;
         }
         if (player1.GetComponent<FollowThePath>().waypointIndex ==

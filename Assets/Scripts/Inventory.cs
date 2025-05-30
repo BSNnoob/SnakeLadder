@@ -10,7 +10,6 @@ public class Inventory {
     {
         this.useItemAction = useItemAction;
         itemList = new List<Item>();
-        AddItem(new Item { itemType = Item.ItemType.DoubleDice });
     }
 
     public Action OnItemListChanged { get; internal set; }

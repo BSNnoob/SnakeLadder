@@ -3,7 +3,7 @@ using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_Inventory2 : MonoBehaviour
+public class UI_Inventory3 : MonoBehaviour
 {
     private Inventory inventory;
     private Transform itemSlotContainer;
@@ -32,7 +32,7 @@ public class UI_Inventory2 : MonoBehaviour
 
     int x = 0;
     int y = 0;
-    float cellSize = -60f;
+    float cellSize = 60f;
 
     foreach (Item item in inventory.GetItemList()) {
         RectTransform slot = Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();

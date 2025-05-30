@@ -18,7 +18,17 @@ public class player2Inventory : MonoBehaviour
     }
 
     private void UseItem(Item item){
-        switch (item.itemType){
+        // ✅ Prevent using item if it's not this player's turn
+int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
+
+if (currentTurn != playerNumber)
+{
+    Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
+    return;
+}
+
+        switch (item.itemType)
+        {
             case Item.ItemType.DoubleDice:
                 GameControl.useDoubleDice = true;
                 spawnedDice2 = Instantiate(dice2Prefab, new Vector3(2, 2, 0), Quaternion.identity);

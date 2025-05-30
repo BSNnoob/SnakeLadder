@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class player1Inventory : MonoBehaviour
+public class player4Inventory : MonoBehaviour
 {
-    [SerializeField] private UI_Inventory1 uI_Inventory;
+    [SerializeField] private UI_Inventory4 uI_Inventory;
     private Inventory inventory;
     [SerializeField] private GameObject dice2Prefab;
     public int playerNumber;
@@ -19,13 +19,13 @@ public class player1Inventory : MonoBehaviour
 
     private void UseItem(Item item){
         // ✅ Prevent using item if it's not this player's turn
-        int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
+int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
 
-        if (currentTurn != playerNumber)
-        {
-            Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
-            return;
-        }
+if (currentTurn != playerNumber)
+{
+    Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
+    return;
+}
 
         switch (item.itemType)
         {

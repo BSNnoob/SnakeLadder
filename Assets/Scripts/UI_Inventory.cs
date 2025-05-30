@@ -3,7 +3,7 @@ using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_Inventory : MonoBehaviour
+public class UI_Inventory1 : MonoBehaviour
 {
     private Inventory inventory;
     private Transform itemSlotContainer;

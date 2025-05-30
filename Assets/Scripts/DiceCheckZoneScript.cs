@@ -3,7 +3,6 @@ using UnityEngine;
 public class DiceCheckZoneScript : MonoBehaviour
 {
     Vector3 diceVelocity;
-    private int whosTurn = 1;
     public bool canMove = false;
     public static bool dice1Done = false;
     public static bool dice2Done = false;
@@ -21,36 +20,20 @@ public class DiceCheckZoneScript : MonoBehaviour
     {
         Transform diceObject = col.transform.parent;
 
-        if (diceVelocity.x == 0f && diceVelocity.y == 0f && diceVelocity.z == 0f && rolled)
+        if (diceVelocity == Vector3.zero && rolled)
         {
             int temp = 0;
             switch (col.gameObject.name)
             {
-                case "Side1":
-                    diceNumber = 6;
-                    temp = 6;
-                    break;
-                case "Side2":
-                    diceNumber = 5;
-                    temp = 5;
-                    break;
-                case "Side3":
-                    diceNumber = 4;
-                    temp = 4;
-                    break;
-                case "Side4":
-                    diceNumber = 3;
-                    temp = 3;
-                    break;
-                case "Side5":
-                    diceNumber = 2;
-                    temp = 2;
-                    break;
-                case "Side6":
-                    diceNumber = 1;
-                    temp = 1;
-                    break;
+                case "Side1": temp = 6; break;
+                case "Side2": temp = 5; break;
+                case "Side3": temp = 4; break;
+                case "Side4": temp = 3; break;
+                case "Side5": temp = 2; break;
+                case "Side6": temp = 1; break;
             }
+
+            diceNumber = temp;
 
             if (col.transform.parent.name == "dice")
             {
@@ -63,31 +46,35 @@ public class DiceCheckZoneScript : MonoBehaviour
                 dice2Done = true;
             }
 
-            DiceNumberTextScript.diceNumber = dice1 + dice2;
+            DiceNumberTextScript.diceNumber = 4;
             GameControl.diceSideThrown = DiceNumberTextScript.diceNumber;
 
             Debug.Log("Dice : " + GameControl.diceSideThrown);
 
-            if (dice1Done && dice2Done)
+            if (dice1Done && dice2Done && canMove)
             {
-                if (GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn == 1)
+                int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
+
+                if (currentTurn == 1)
                 {
-                    if (canMove == true)
-                    {
-                        GameControl.MovePlayer(1);
-                        rolled = false;
-                        GameControl.hasReceivedDoubleDice = false;
-                        canMove = false;
-                    }
+                    GameControl.MovePlayer(1);
                 }
-                else if (GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn == -1)
+                else if (currentTurn == 2)
                 {
-                    if (canMove == true)
-                    {
-                        GameControl.MovePlayer(2);
-                        canMove = false;
-                    }
+                    GameControl.MovePlayer(2);
                 }
+                else if (currentTurn == 3)
+                {
+                    GameControl.MovePlayer(3);
+                }
+                else if (currentTurn == 4)
+                {
+                    GameControl.MovePlayer(4);
+                }
+
+                rolled = false;
+                GameControl.hasReceivedDoubleDice = false;
+                canMove = false;
             }
         }
     }

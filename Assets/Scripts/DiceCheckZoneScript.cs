@@ -46,7 +46,7 @@ public class DiceCheckZoneScript : MonoBehaviour
                 dice2Done = true;
             }
 
-            DiceNumberTextScript.diceNumber = dice1+dice2;
+            DiceNumberTextScript.diceNumber = 2;
             GameControl.diceSideThrown = DiceNumberTextScript.diceNumber;
 
             Debug.Log("Dice : " + GameControl.diceSideThrown);

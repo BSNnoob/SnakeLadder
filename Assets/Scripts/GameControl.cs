@@ -89,19 +89,21 @@ public class GameControl : MonoBehaviour
             player1.GetComponent<FollowThePath>().moveAllowed = false;
             player1MoveText.SetActive(false);
             player2MoveText.SetActive(true);
-            whosTurn++;
-            UpdateCameraTarget();
+
 
             var path1 = player1.GetComponent<FollowThePath>();
-player1StartWaypoint = path1.waypointIndex - 1;
+            player1StartWaypoint = path1.waypointIndex - 1;
 
-if (snakePositions.ContainsKey(path1.waypointIndex))
-{
-    int newWaypoint = snakePositions[path1.waypointIndex];
-    StartCoroutine(AnimateSnakeBite(player1, newWaypoint));
-
-    Debug.Log($"🐍 Player 1 hit a snake! Sent from {path1.waypointIndex} to {newWaypoint}");
-}
+            if (snakePositions.ContainsKey(path1.waypointIndex))
+            {
+                int newWaypoint = snakePositions[path1.waypointIndex];
+                StartCoroutine(AnimateSnakeBite(player1, newWaypoint));
+            }
+            else
+            {
+                whosTurn++;
+                UpdateCameraTarget();
+            }
             if (player1.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
             {
                 player1InventoryScript.GetInventory().AddItem(new Item { itemType = Item.ItemType.DoubleDice });
@@ -116,10 +118,19 @@ if (snakePositions.ContainsKey(path1.waypointIndex))
             player2.GetComponent<FollowThePath>().moveAllowed = false;
             player2MoveText.SetActive(false);
             player3MoveText.SetActive(true);
-            whosTurn++;
-            UpdateCameraTarget();
+            var path2 = player2.GetComponent<FollowThePath>();
             player2StartWaypoint = player2.GetComponent<FollowThePath>().waypointIndex - 1;
-            CheckForSnake(player1);
+
+            if (snakePositions.ContainsKey(path2.waypointIndex))
+            {
+                int newWaypoint = snakePositions[path2.waypointIndex];
+                StartCoroutine(AnimateSnakeBite(player2, newWaypoint));
+            }
+            else
+            {
+                whosTurn++;
+                UpdateCameraTarget();
+            }
             if (player2.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
             {
                 player2InventoryScript.GetInventory().AddItem(new Item { itemType = Item.ItemType.DoubleDice });
@@ -134,10 +145,20 @@ if (snakePositions.ContainsKey(path1.waypointIndex))
             player3.GetComponent<FollowThePath>().moveAllowed = false;
             player3MoveText.SetActive(false);
             player4MoveText.SetActive(true);
-            whosTurn++;
-            UpdateCameraTarget();
+
+            var path3 = player3.GetComponent<FollowThePath>();
             player3StartWaypoint = player3.GetComponent<FollowThePath>().waypointIndex - 1;
-            CheckForSnake(player1);
+
+            if (snakePositions.ContainsKey(path3.waypointIndex))
+            {
+                int newWaypoint = snakePositions[path3.waypointIndex];
+                StartCoroutine(AnimateSnakeBite(player3, newWaypoint));
+            }
+            else
+            {
+                whosTurn++;
+                UpdateCameraTarget();
+            }
             if (player3.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
             {
                 player3InventoryScript.GetInventory().AddItem(new Item { itemType = Item.ItemType.DoubleDice });
@@ -152,10 +173,19 @@ if (snakePositions.ContainsKey(path1.waypointIndex))
             player4.GetComponent<FollowThePath>().moveAllowed = false;
             player4MoveText.SetActive(false);
             player1MoveText.SetActive(true);
-            whosTurn = 1;
-            UpdateCameraTarget();
+            var path4 = player4.GetComponent<FollowThePath>();
             player4StartWaypoint = player4.GetComponent<FollowThePath>().waypointIndex - 1;
-            CheckForSnake(player1);
+
+            if (snakePositions.ContainsKey(path4.waypointIndex))
+            {
+                int newWaypoint = snakePositions[path4.waypointIndex];
+                StartCoroutine(AnimateSnakeBite(player4, newWaypoint));
+            }
+            else
+            {
+                whosTurn++;
+                UpdateCameraTarget();
+            }
             if (player4.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
             {
                 player4InventoryScript.GetInventory().AddItem(new Item { itemType = Item.ItemType.DoubleDice });
@@ -233,71 +263,64 @@ if (snakePositions.ContainsKey(path1.waypointIndex))
         if (snakePositions.ContainsKey(currentWaypoint))
         {
             int newWaypoint = snakePositions[currentWaypoint];
+            player1StartWaypoint = newWaypoint;
             path.waypointIndex = newWaypoint;
             player.transform.position = path.waypoints[newWaypoint].position;
             Debug.Log($"[SnakeTrigger] {player.name} hit a snake! Moved from {currentWaypoint} to {newWaypoint}");
         }
     }
-private IEnumerator AnimateSnakeBite(GameObject player, int targetWaypointIndex)
-{
-    var path = player.GetComponent<FollowThePath>();
-    path.moveAllowed = false;
-
-    Vector3 originalPos = player.transform.position;
-    float shakeDuration = 0.4f;
-    float shakeMagnitude = 0.2f;
-    float elapsed = 0f;
-
-    // 🔥 Find Snake Animator from Waypoint 3
-    Transform snakeWaypoint = path.waypoints[2]; // Assumes snake is on waypoint 3
-    Animator snakeAnimator = snakeWaypoint.Find("Snake")?.GetComponent<Animator>();
-    
-    if (snakeAnimator != null)
+    private IEnumerator AnimateSnakeBite(GameObject player, int targetWaypointIndex)
     {
-        snakeAnimator.Play("Attack"); // Make sure your attack animation is called exactly "Attack"
+        var path = player.GetComponent<FollowThePath>();
+        path.moveAllowed = false;
+
+        Vector3 originalPos = player.transform.position;
+        float shakeDuration = 0.4f;
+        float shakeMagnitude = 0.2f;
+        float elapsed = 0f;
+
+        Animator snakeAnimator = GameObject.Find($"waypoints/waypoint ({player1StartWaypoint + 1})/snake")?.GetComponent<Animator>();
+        Debug.Log($"({targetWaypointIndex})");
+        if (snakeAnimator != null)
+        {
+            snakeAnimator.Play("Attack");
+        }
+        while (elapsed < shakeDuration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
+            float offsetY = Random.Range(-1f, 1f) * shakeMagnitude;
+            player.transform.position = originalPos + new Vector3(offsetX, offsetY, 0);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        player.transform.position = originalPos;
+
+        Vector3 startPos = player.transform.position;
+        Vector3 targetPos = path.waypoints[targetWaypointIndex].position;
+        float moveDuration = 0.5f;
+        elapsed = 0f;
+
+        while (elapsed < moveDuration)
+        {
+            player.transform.position = Vector3.Lerp(startPos, targetPos, elapsed / moveDuration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        player.transform.position = targetPos;
+        path.waypointIndex = targetWaypointIndex;
+        whosTurn++;
+        UpdateCameraTarget();
+
+        if (snakeAnimator != null)
+        {
+            snakeAnimator.Play("Idle");
+        }
     }
-
-    // 🐍 Player shake effect
-    while (elapsed < shakeDuration)
-    {
-        float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
-        float offsetY = Random.Range(-1f, 1f) * shakeMagnitude;
-        player.transform.position = originalPos + new Vector3(offsetX, offsetY, 0);
-        elapsed += Time.deltaTime;
-        yield return null;
-    }
-
-    player.transform.position = originalPos;
-
-    // Move player to new position
-    Vector3 startPos = player.transform.position;
-    Vector3 targetPos = path.waypoints[targetWaypointIndex].position;
-    float moveDuration = 0.5f;
-    elapsed = 0f;
-
-    while (elapsed < moveDuration)
-    {
-        player.transform.position = Vector3.Lerp(startPos, targetPos, elapsed / moveDuration);
-        elapsed += Time.deltaTime;
-        yield return null;
-    }
-
-    player.transform.position = targetPos;
-    path.waypointIndex = targetWaypointIndex;
-
-    // ⏸️ Optional: Reset snake to idle
-    if (snakeAnimator != null)
-    {
-        snakeAnimator.Play("Idle");
-    }
-}
-
-
-
 
     private static Dictionary<int, int> snakePositions = new Dictionary<int, int>()
     {
-        { 3, 0 }, // Snake from 3 to 1
-        // Add more here
+        { 3, 0 }, 
     };
 }

@@ -183,7 +183,7 @@ public class GameControl : MonoBehaviour
             }
             else
             {
-                whosTurn++;
+                whosTurn = 1;
                 UpdateCameraTarget();
             }
             if (player4.GetComponent<FollowThePath>().waypointIndex == 5 && !hasReceivedDoubleDice)
@@ -310,7 +310,14 @@ public class GameControl : MonoBehaviour
 
         player.transform.position = targetPos;
         path.waypointIndex = targetWaypointIndex;
-        whosTurn++;
+        if (whosTurn <= 3)
+        {
+            whosTurn++;
+        }
+        else
+        {
+            whosTurn = 1;
+        }
         UpdateCameraTarget();
 
         if (snakeAnimator != null)

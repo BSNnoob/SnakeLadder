@@ -19,7 +19,14 @@ public class Inventory {
         OnItemListChanged?.Invoke();
     }
 
-    public List<Item> GetItemList(){
+    public void RemoveItem(Item item)
+    {
+        itemList.Remove(item);
+        OnItemListChanged?.Invoke();
+    }
+
+    public List<Item> GetItemList()
+    {
         return itemList;
     }
 

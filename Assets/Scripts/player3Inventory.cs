@@ -33,13 +33,21 @@ if (currentTurn != playerNumber)
                 GameControl.useDoubleDice = true;
                 spawnedDice2 = Instantiate(dice2Prefab, new Vector3(2, 2, 0), Quaternion.identity);
                 GameObject.Find("GameControl").GetComponent<GameControl>().SetDice2Instance(spawnedDice2);
+                inventory.RemoveItem(item);
                 inventory.OnItemListChanged?.Invoke();
                 break;
             case Item.ItemType.AvoidSnake:
-                Debug.Log("A");
+                GameControl.useAvoidSnake = true;
+                inventory.RemoveItem(item);
+                inventory.OnItemListChanged?.Invoke();
+                Debug.Log($"avoid snake {GameControl.useAvoidSnake}");
                 break;
             case Item.ItemType.LadderGrab:
-                Debug.Log("A");
+                GameObject player = GameObject.Find($"Player{playerNumber}");
+                GameObject.Find("GameControl").GetComponent<GameControl>().UseLadderGrab(player);
+
+                inventory.RemoveItem(item);
+                inventory.OnItemListChanged?.Invoke();
                 break;
         }
     }

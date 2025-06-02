@@ -41,7 +41,8 @@ public class UI_Inventory1 : MonoBehaviour
         // Top-left layout: X right, Y down
         slot.anchoredPosition = new Vector2(x * cellSize, -y * cellSize);
 
-        slot.GetComponent<Button_UI>().ClickFunc = () => {
+        slot.GetComponent<Button_UI>().ClickFunc = () =>
+        {
             inventory.UseItem(item);
         };
 

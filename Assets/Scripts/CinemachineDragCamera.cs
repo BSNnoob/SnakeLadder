@@ -15,7 +15,6 @@ public class CinemachineManualOrbit : MonoBehaviour
         if (cmCamera == null || cmCamera.Follow == null)
             return;
 
-        // Right mouse input to control rotation
         if (Input.GetMouseButtonDown(1))
         {
             Cursor.lockState = CursorLockMode.Locked;

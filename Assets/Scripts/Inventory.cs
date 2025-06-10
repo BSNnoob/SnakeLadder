@@ -34,38 +34,37 @@ public class Inventory {
         useItemAction(item);
     }
 
-[System.Serializable]
-private class InventorySaveData
-{
-    public List<Item> items;
-}
-
-public string ToJson()
-{
-    InventorySaveData saveData = new InventorySaveData {
-        items = this.itemList
-    };
-    return JsonUtility.ToJson(saveData);
-}
-
-public void LoadFromJson(string json)
-{
-    if (string.IsNullOrEmpty(json)) return;
-
-    InventorySaveData loaded = JsonUtility.FromJson<InventorySaveData>(json);
-    if (loaded != null && loaded.items != null)
+    [System.Serializable]
+    private class InventorySaveData
     {
-        this.itemList = loaded.items;
-    }
-    else
-    {
-        this.itemList = new List<Item>();
+        public List<Item> items;
     }
 
-    OnItemListChanged?.Invoke();
-}
+    public string ToJson()
+    {
+        InventorySaveData saveData = new InventorySaveData
+        {
+            items = this.itemList
+        };
+        return JsonUtility.ToJson(saveData);
+    }
 
+    public void LoadFromJson(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return;
 
+        InventorySaveData loaded = JsonUtility.FromJson<InventorySaveData>(json);
+        if (loaded != null && loaded.items != null)
+        {
+            this.itemList = loaded.items;
+        }
+        else
+        {
+            this.itemList = new List<Item>();
+        }
+
+        OnItemListChanged?.Invoke();
+    }
 
 }
 

@@ -23,7 +23,6 @@ public class player4Inventory : MonoBehaviour
 
         if (currentTurn != playerNumber)
         {
-            Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
             return;
         }
 
@@ -44,7 +43,6 @@ public class player4Inventory : MonoBehaviour
                 GameControl.useAvoidSnake = true;
                 inventory.RemoveItem(item);
                 inventory.OnItemListChanged?.Invoke();
-                Debug.Log($"✅ Avoid Snake activated: {GameControl.useAvoidSnake}");
                 break;
 
             case Item.ItemType.LadderGrab:

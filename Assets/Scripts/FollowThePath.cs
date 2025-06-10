@@ -12,13 +12,11 @@ public class FollowThePath : MonoBehaviour
     public int waypointIndex = 0;
     public bool moveAllowed = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         transform.position = waypoints[waypointIndex].transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (moveAllowed)

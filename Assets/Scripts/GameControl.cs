@@ -48,7 +48,7 @@ public class GameControl : MonoBehaviour
     private bool[] isWaitingForLadderGrab = new bool[4];
 
     private Dictionary<int, List<GameObject>> playersAtWaypoint = new Dictionary<int, List<GameObject>>();
-    public float overlapOffset = 8f; // distance between stacked players
+    public float overlapOffset = 8f;
 
 
     public CinemachineCamera cmCamera;
@@ -179,7 +179,6 @@ public class GameControl : MonoBehaviour
             useLadderGrab = false;
         }
 
-        // Win check
         CheckWinCondition();
     }
 
@@ -203,7 +202,6 @@ public class GameControl : MonoBehaviour
 
         GameControl instance = GameObject.Find("GameControl").GetComponent<GameControl>();
 
-        // ✅ Reset flag to allow the new player's turn to start
         instance.turnEnded = false;
 
         if (instance.dice2Instance != null)
@@ -222,16 +220,12 @@ public class GameControl : MonoBehaviour
     {
         var path = player.GetComponent<FollowThePath>();
         int currentWaypoint = path.waypointIndex - 1;
-
-        Debug.Log($"[SnakeCheck] {player.name} at waypointIndex {path.waypointIndex}, currentWaypoint: {currentWaypoint}");
-
         if (snakePositions.ContainsKey(currentWaypoint))
         {
             int newWaypoint = snakePositions[currentWaypoint];
             player1StartWaypoint = newWaypoint;
             path.waypointIndex = newWaypoint;
             player.transform.position = path.waypoints[newWaypoint].position;
-            Debug.Log($"[SnakeTrigger] {player.name} hit a snake! Moved from {currentWaypoint} to {newWaypoint}");
         }
     }
     private IEnumerator AnimateSnakeBite(GameObject player, int targetWaypointIndex)
@@ -263,7 +257,6 @@ public class GameControl : MonoBehaviour
             snakeAnimator = GameObject.Find($"waypoints/waypoint ({player4StartWaypoint})/snake")?.GetComponent<Animator>();
         }
 
-        Debug.Log($"({targetWaypointIndex})");
         if (snakeAnimator != null)
         {
             snakeAnimator.Play("Attack");
@@ -330,16 +323,13 @@ public class GameControl : MonoBehaviour
         Transform entryPipe = GameObject.Find($"waypoints/waypoint ({startWaypointIndex - 1})/PipeIn")?.transform;
         if (entryPipe == null)
         {
-            Debug.LogWarning($"PipeIn not found for waypoint {startWaypointIndex}. Falling back to instant move.");
             path.waypointIndex = targetWaypointIndex;
             ApplyOverlapOffset(player, targetWaypointIndex);
             yield break;
         }
 
-        // Move player to pipe entry
         player.transform.position = entryPipe.position;
 
-        // Animate shrinking into pipe
         float duration = 0.3f;
         Vector3 originalScale = player.transform.localScale;
         float t = 0f;
@@ -353,14 +343,12 @@ public class GameControl : MonoBehaviour
         player.transform.localScale = Vector3.zero;
         player.GetComponent<Renderer>().enabled = false;
 
-        // Wait inside pipe
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.5f);
 
         // --- EXIT PIPE ---
         Transform exitPipe = GameObject.Find($"waypoints/waypoint ({targetWaypointIndex})/PipeOut")?.transform;
         if (exitPipe == null)
         {
-            Debug.LogWarning($"PipeOut not found for waypoint {targetWaypointIndex}. Using normal tile position.");
             player.transform.position = path.waypoints[targetWaypointIndex].position;
         }
         else
@@ -368,7 +356,6 @@ public class GameControl : MonoBehaviour
             player.transform.position = exitPipe.position;
         }
 
-        // Show and pop out of pipe
         yield return new WaitForSeconds(0.2f);
         player.GetComponent<Renderer>().enabled = true;
 
@@ -382,7 +369,6 @@ public class GameControl : MonoBehaviour
 
         player.transform.localScale = originalScale;
 
-        // Finalize position and logic
         path.waypointIndex = targetWaypointIndex;
         ApplyOverlapOffset(player, targetWaypointIndex);
 
@@ -403,7 +389,6 @@ public class GameControl : MonoBehaviour
     {
         if (!IsLadderNearby(player))
         {
-            Debug.Log("🚫 LadderGrab not used: no ladder nearby.");
             return false;
         }
 
@@ -430,11 +415,9 @@ public class GameControl : MonoBehaviour
             int playerIndex = GetPlayerIndex(player);
             isWaitingForLadderGrab[playerIndex] = true;
             StartCoroutine(UseLadderGrabClimb(player, nearestLadderStart, nearestLadderEnd));
-            Debug.Log($"🪜 LadderGrab: climbing from {nearestLadderStart} to {nearestLadderEnd}");
             return true;
         }
 
-        Debug.Log("🚫 No ladder found within range.");
         return false;
     }
 
@@ -443,9 +426,6 @@ public class GameControl : MonoBehaviour
     {
         var path = player.GetComponent<FollowThePath>();
 
-        Debug.Log($"⏬ LadderGrab STARTED: {player.name} from {ladderStartIndex} to {ladderEndIndex}");
-
-        // Move to pipe entry (ladder base)
         path.waypointIndex = ladderStartIndex;
         player.transform.position = path.waypoints[ladderStartIndex].position;
 
@@ -455,7 +435,6 @@ public class GameControl : MonoBehaviour
         if (entryPipe != null)
             player.transform.position = entryPipe.position;
 
-        // Smooth shrink animation
         float duration = 0.3f;
         float t = 0f;
         Vector3 originalScale = player.transform.localScale;
@@ -470,13 +449,11 @@ public class GameControl : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
-        // Move to pipe exit (ladder top)
         if (exitPipe != null)
             player.transform.position = exitPipe.position;
         else
             player.transform.position = path.waypoints[ladderEndIndex].position;
 
-        // Grow back to normal size
         t = 0f;
         while (t < duration)
         {
@@ -486,7 +463,6 @@ public class GameControl : MonoBehaviour
         }
         player.transform.localScale = originalScale;
 
-        // Finalize movement
         path.waypointIndex = ladderEndIndex;
         ApplyOverlapOffset(player, ladderEndIndex);
 
@@ -495,7 +471,6 @@ public class GameControl : MonoBehaviour
         else if (player == player3) player3StartWaypoint = ladderEndIndex;
         else if (player == player4) player4StartWaypoint = ladderEndIndex;
 
-        // Advance turn
         whosTurn = (whosTurn % 4) + 1;
         UpdateCameraTarget();
         DiceScript.canRoll = true;
@@ -512,7 +487,6 @@ public class GameControl : MonoBehaviour
         diceSideThrown = 0;
         turnEnded = false;
 
-        Debug.Log($"✅ LadderGrab COMPLETE: {player.name} is now at {ladderEndIndex}");
     }
 
     private int GetPlayerIndex(GameObject player)
@@ -521,7 +495,7 @@ public class GameControl : MonoBehaviour
         if (player == player2) return 1;
         if (player == player3) return 2;
         if (player == player4) return 3;
-        return -1; // fail-safe
+        return -1; 
     }
     private static Dictionary<int, int> snakePositions = new Dictionary<int, int>()
     {
@@ -573,7 +547,6 @@ public class GameControl : MonoBehaviour
                 break;
         }
 
-        Debug.Log($"🎁 Player {playerNumber} received: {randomItem.itemType}");
 
         ShowItemInfo(randomItem, () =>
         {
@@ -617,15 +590,12 @@ public class GameControl : MonoBehaviour
         if (!playersAtWaypoint.ContainsKey(waypointIndex))
             playersAtWaypoint[waypointIndex] = new List<GameObject>();
 
-        // Remove from other waypoints first
         foreach (var kvp in playersAtWaypoint)
             kvp.Value.Remove(player);
 
-        // Add to current
         var list = playersAtWaypoint[waypointIndex];
         list.Add(player);
 
-        // Get base position
         Transform[] waypoints = player.GetComponent<FollowThePath>().waypoints;
         Vector3 basePos = waypoints[waypointIndex].position;
 
@@ -635,7 +605,6 @@ public class GameControl : MonoBehaviour
             return;
         }
 
-        // Circular offset
         int index = list.IndexOf(player);
         float angle = (360f / list.Count) * index;
         Vector3 offset = new Vector3(
@@ -656,10 +625,10 @@ public class GameControl : MonoBehaviour
         itemImage.sprite = item.GetSprite();
 
         infoPanel.SetActive(true);
-        waitingForItemPanel = true; // ⬅ Add this
+        waitingForItemPanel = true;
         onInfoClosed = () =>
         {
-            waitingForItemPanel = false; // ⬅ Clear it when closed
+            waitingForItemPanel = false;
             onClosed?.Invoke();
         };
     }
@@ -761,25 +730,17 @@ public class GameControl : MonoBehaviour
         PlayerPrefs.SetInt("P3_Waypoint", player3.GetComponent<FollowThePath>().waypointIndex);
         PlayerPrefs.SetInt("P4_Waypoint", player4.GetComponent<FollowThePath>().waypointIndex);
         var items = player1InventoryScript.GetInventory().GetItemList();
-        Debug.Log("💾 Items in Player 1 inventory before saving: " + items.Count);
-        foreach (var item in items)
-            Debug.Log("    🔸 " + item.itemType);
-
 
         string inv1 = player1InventoryScript.GetInventory().ToJson();
-        Debug.Log("💾 Saving Player 1 Inventory JSON: " + inv1);
         PlayerPrefs.SetString("P1_Inventory", inv1);
 
         string inv2 = player2InventoryScript.GetInventory().ToJson();
-        Debug.Log("💾 Saving Player 2 Inventory JSON: " + inv2);
         PlayerPrefs.SetString("P2_Inventory", inv2);
 
         string inv3 = player3InventoryScript.GetInventory().ToJson();
-        Debug.Log("💾 Saving Player 3 Inventory JSON: " + inv3);
         PlayerPrefs.SetString("P3_Inventory", inv3);
 
         string inv4 = player4InventoryScript.GetInventory().ToJson();
-        Debug.Log("💾 Saving Player 4 Inventory JSON: " + inv4);
         PlayerPrefs.SetString("P4_Inventory", inv4);
 
         PlayerPrefs.SetString("P1_Inventory", player1InventoryScript.GetInventory().ToJson());
@@ -788,7 +749,6 @@ public class GameControl : MonoBehaviour
         PlayerPrefs.SetString("P4_Inventory", player4InventoryScript.GetInventory().ToJson());
 
         PlayerPrefs.Save();
-        Debug.Log("💾 Game Saved!");
     }
 
     public void LoadGame()
@@ -824,13 +784,12 @@ public class GameControl : MonoBehaviour
         UpdateCameraTarget();
         DiceScript.canRoll = true;
 
-        Debug.Log("✅ Game Loaded!");
-        Debug.Log("🧪 P1 Items after load: " + player1InventoryScript.GetInventory().GetItemList().Count);
+
     }
 
     public void BackToMenu()
     {
-        Time.timeScale = 1f; // In case the game is paused
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // restart current scene
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
     }
 }

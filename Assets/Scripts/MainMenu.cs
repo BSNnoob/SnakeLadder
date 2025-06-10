@@ -6,13 +6,12 @@ public class MainMenu : MonoBehaviour
     public GameObject menuUI;
     public Transform menuCameraPoint;
     public Transform gameplayCameraTarget;
-    public CinemachineCamera cmCamera; // The main camera with Tracking Target enabled
+    public CinemachineCamera cmCamera;
 
     void Start()
     {
-        Time.timeScale = 0f; // Freeze everything until play is clicked
+        Time.timeScale = 0f;
 
-        // At start, follow the menu point
         cmCamera.Target.TrackingTarget = menuCameraPoint;
 
         Time.timeScale = 0f;

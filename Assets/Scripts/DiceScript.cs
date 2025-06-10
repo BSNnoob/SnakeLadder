@@ -7,28 +7,22 @@ public class DiceScript : MonoBehaviour
     internal int diceNumber;
     public static bool canRoll = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Debug.Log("DiceScript START on: " + gameObject.name);
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (rb == null)
         {
-            Debug.LogWarning("Rigidbody missing on dice — Update aborted!");
             return;
         }
 
         diceVelocity = rb.linearVelocity;
-        Debug.Log("Dice Update running");
 
         if ((Input.GetKeyDown(KeyCode.Space) && !IsPlayerMoving() && canRoll) || (GameControl.useDoubleDice && Input.GetKeyDown(KeyCode.Space)))
         {
-            Debug.Log("Space pressed, rolling dice");
             DiceCheckZoneScript.dice1 = 0;
             DiceCheckZoneScript.dice2 = 0;
             DiceCheckZoneScript.dice1Done = false;
@@ -43,7 +37,7 @@ public class DiceScript : MonoBehaviour
             }
             else
             {
-                transform.position = new Vector3(0, 2, 0); // fallback
+                transform.position = new Vector3(0, 2, 0);
             }
             if (GameControl.useDoubleDice)
             {

@@ -20,7 +20,6 @@ public class OptionsMenu : MonoBehaviour
 
         AudioListener.volume = musicSlider.value;
 
-        // Populate resolutions
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
 

@@ -28,7 +28,7 @@ public class PauseMenu : MonoBehaviour
         TogglePause();
     }
 
-    public GameObject optionsPanel; // Assign this in Inspector
+    public GameObject optionsPanel;
 
     public void OnOptionClicked()
     {
@@ -37,19 +37,13 @@ public class PauseMenu : MonoBehaviour
 
     public void OnSaveAndQuitClicked()
     {
-        // Save game
         GameControl gc = GameObject.Find("GameControl").GetComponent<GameControl>();
         gc.SaveGame();
 
-        // Optional: reset flag if you're returning to menu
         GameControl.hasGameStarted = false;
 
-        Time.timeScale = 1f; // unpause before quitting or loading scene
+        Time.timeScale = 1f;
 
-        // Option 1: Return to main menu scene
         SceneManager.LoadScene("MainMenuScene");
-
-        // Option 2: Or just quit game:
-        // Application.Quit();
     }
 }

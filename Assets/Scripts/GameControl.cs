@@ -160,7 +160,8 @@ public class GameControl : MonoBehaviour
                 whosTurn = (whosTurn % 4) + 1;
                 if (hasGameStarted)
                     UpdateCameraTarget();
-
+                
+                DiceScript.canRoll = true;
                 if (useAvoidSnake) useAvoidSnake = false;
             }
 
@@ -177,9 +178,6 @@ public class GameControl : MonoBehaviour
         // Win check
         CheckWinCondition();
     }
-
-
-
 
     public static void MovePlayer(int playerToMove)
     {
@@ -309,6 +307,7 @@ public class GameControl : MonoBehaviour
         {
             whosTurn = 1;
         }
+        DiceScript.canRoll = true;
         UpdateCameraTarget();
 
         if (snakeAnimator != null)
@@ -390,6 +389,8 @@ public class GameControl : MonoBehaviour
 
         if (whosTurn <= 3) whosTurn++;
         else whosTurn = 1;
+        DiceScript.canRoll = true;
+
 
         UpdateCameraTarget();
     }
@@ -493,6 +494,8 @@ public class GameControl : MonoBehaviour
         // Advance turn
         whosTurn = (whosTurn % 4) + 1;
         UpdateCameraTarget();
+        DiceScript.canRoll = true;
+
 
         player1MoveText.SetActive(whosTurn == 1);
         player2MoveText.SetActive(whosTurn == 2);
@@ -575,6 +578,7 @@ public class GameControl : MonoBehaviour
 
             whosTurn = (whosTurn % 4) + 1;
             UpdateCameraTarget();
+            DiceScript.canRoll = true;
 
             player1MoveText.SetActive(whosTurn == 1);
             player2MoveText.SetActive(whosTurn == 2);
@@ -748,6 +752,27 @@ public class GameControl : MonoBehaviour
         PlayerPrefs.SetInt("P2_Waypoint", player2.GetComponent<FollowThePath>().waypointIndex);
         PlayerPrefs.SetInt("P3_Waypoint", player3.GetComponent<FollowThePath>().waypointIndex);
         PlayerPrefs.SetInt("P4_Waypoint", player4.GetComponent<FollowThePath>().waypointIndex);
+        var items = player1InventoryScript.GetInventory().GetItemList();
+        Debug.Log("💾 Items in Player 1 inventory before saving: " + items.Count);
+        foreach (var item in items)
+        Debug.Log("    🔸 " + item.itemType);
+
+
+        string inv1 = player1InventoryScript.GetInventory().ToJson();
+        Debug.Log("💾 Saving Player 1 Inventory JSON: " + inv1);
+        PlayerPrefs.SetString("P1_Inventory", inv1);
+
+        string inv2 = player2InventoryScript.GetInventory().ToJson();
+        Debug.Log("💾 Saving Player 2 Inventory JSON: " + inv2);
+        PlayerPrefs.SetString("P2_Inventory", inv2);
+
+        string inv3 = player3InventoryScript.GetInventory().ToJson();
+        Debug.Log("💾 Saving Player 3 Inventory JSON: " + inv3);
+        PlayerPrefs.SetString("P3_Inventory", inv3);
+
+        string inv4 = player4InventoryScript.GetInventory().ToJson();
+        Debug.Log("💾 Saving Player 4 Inventory JSON: " + inv4);
+        PlayerPrefs.SetString("P4_Inventory", inv4);
 
         PlayerPrefs.SetString("P1_Inventory", player1InventoryScript.GetInventory().ToJson());
         PlayerPrefs.SetString("P2_Inventory", player2InventoryScript.GetInventory().ToJson());
@@ -761,6 +786,10 @@ public class GameControl : MonoBehaviour
     public void LoadGame()
     {
         whosTurn = PlayerPrefs.GetInt("whosTurn", 1);
+        player1MoveText.SetActive(whosTurn == 1);
+        player2MoveText.SetActive(whosTurn == 2);
+        player3MoveText.SetActive(whosTurn == 3);
+        player4MoveText.SetActive(whosTurn == 4);
 
         player1.GetComponent<FollowThePath>().waypointIndex = PlayerPrefs.GetInt("P1_Waypoint", 0);
         player2.GetComponent<FollowThePath>().waypointIndex = PlayerPrefs.GetInt("P2_Waypoint", 0);
@@ -773,12 +802,22 @@ public class GameControl : MonoBehaviour
         player4.transform.position = player4.GetComponent<FollowThePath>().waypoints[PlayerPrefs.GetInt("P4_Waypoint", 0)].position;
 
         player1InventoryScript.GetInventory().LoadFromJson(PlayerPrefs.GetString("P1_Inventory", ""));
+        player1InventoryScript.GetInventory().OnItemListChanged?.Invoke();
+
         player2InventoryScript.GetInventory().LoadFromJson(PlayerPrefs.GetString("P2_Inventory", ""));
+        player2InventoryScript.GetInventory().OnItemListChanged?.Invoke();
+
         player3InventoryScript.GetInventory().LoadFromJson(PlayerPrefs.GetString("P3_Inventory", ""));
+        player3InventoryScript.GetInventory().OnItemListChanged?.Invoke();
+
         player4InventoryScript.GetInventory().LoadFromJson(PlayerPrefs.GetString("P4_Inventory", ""));
+        player4InventoryScript.GetInventory().OnItemListChanged?.Invoke();
 
         UpdateCameraTarget();
+        DiceScript.canRoll = true;
 
         Debug.Log("✅ Game Loaded!");
+        Debug.Log("🧪 P1 Items after load: " + player1InventoryScript.GetInventory().GetItemList().Count);
+
     }
 }

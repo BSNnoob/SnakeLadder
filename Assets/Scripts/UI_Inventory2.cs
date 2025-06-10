@@ -17,10 +17,11 @@ public class UI_Inventory2 : MonoBehaviour
         itemSlotContainer = transform.Find("itemSlotContainer");
         itemSlotTemplate = itemSlotContainer.Find("itemSlotTemplate");
     }
-    public void SetInventory(Inventory inventory){
+    public void SetInventory(Inventory inventory)
+    {
         this.inventory = inventory;
         inventory.OnItemListChanged += RefreshInventoryItems;
-        RefreshInventoryItems();
+        RefreshInventoryItems(); // Initial refresh
     }
     
     private void RefreshInventoryItems() {

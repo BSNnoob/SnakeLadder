@@ -5,6 +5,7 @@ public class DiceScript : MonoBehaviour
     private Rigidbody rb;
     public static Vector3 diceVelocity;
     internal int diceNumber;
+    public static bool canRoll = true;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,11 +22,11 @@ public class DiceScript : MonoBehaviour
             Debug.LogWarning("Rigidbody missing on dice — Update aborted!");
             return;
         }
-            
+
         diceVelocity = rb.linearVelocity;
         Debug.Log("Dice Update running");
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && !IsPlayerMoving() && canRoll)
         {
             Debug.Log("Space pressed, rolling dice");
             DiceCheckZoneScript.dice1 = 0;
@@ -61,6 +62,22 @@ public class DiceScript : MonoBehaviour
             rb.AddTorque(dirX, dirY, dirZ);
             GameObject.Find("DiceCheckZone").GetComponent<DiceCheckZoneScript>().canMove = true;
             GameObject.Find("DiceCheckZone").GetComponent<DiceCheckZoneScript>().rolled = true;
+            canRoll = false;
+            }
+    }
+    private bool IsPlayerMoving()
+    {
+        GameControl gc = GameObject.Find("GameControl").GetComponent<GameControl>();
+        string playerName = $"Player{gc.whosTurn}";
+        GameObject player = GameObject.Find(playerName);
+
+        if (player != null)
+        {
+            FollowThePath path = player.GetComponent<FollowThePath>();
+            if (path != null)
+                return path.moveAllowed;
         }
+
+        return false;
     }
 }

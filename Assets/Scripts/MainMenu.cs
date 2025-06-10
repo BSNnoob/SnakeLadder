@@ -21,6 +21,7 @@ public class MainMenu : MonoBehaviour
     public void OnPlayClicked()
     {
         GameControl.hasGameStarted = true;
+        PlayerPrefs.DeleteAll();
 
         cmCamera.Target.TrackingTarget = gameplayCameraTarget;
 

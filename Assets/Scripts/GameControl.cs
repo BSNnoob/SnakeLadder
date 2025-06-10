@@ -3,9 +3,13 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+
 
 public class GameControl : MonoBehaviour
 {
+    public GameObject backToMenuButton;
+
     public static bool hasGameStarted = false;
     private bool waitingForItemPanel = false;
     public GameObject infoPanel;
@@ -39,7 +43,7 @@ public class GameControl : MonoBehaviour
 
     public static bool hasReceivedDoubleDice = false;
     public static bool hasReceivedAvoidSnake = false;
-    private GameObject dice2Instance;
+    public GameObject dice2Instance;
 
     private bool[] isWaitingForLadderGrab = new bool[4];
 
@@ -160,7 +164,7 @@ public class GameControl : MonoBehaviour
                 whosTurn = (whosTurn % 4) + 1;
                 if (hasGameStarted)
                     UpdateCameraTarget();
-                
+
                 DiceScript.canRoll = true;
                 if (useAvoidSnake) useAvoidSnake = false;
             }
@@ -720,24 +724,28 @@ public class GameControl : MonoBehaviour
             whoWinsTextShadow.SetActive(true);
             whoWinsTextShadow.GetComponent<Text>().text = "Player 1 Wins";
             gameOver = true;
+            backToMenuButton.SetActive(true);
         }
         if (player2.GetComponent<FollowThePath>().waypointIndex == player2.GetComponent<FollowThePath>().waypoints.Length)
         {
             whoWinsTextShadow.SetActive(true);
             whoWinsTextShadow.GetComponent<Text>().text = "Player 2 Wins";
             gameOver = true;
+            backToMenuButton.SetActive(true);
         }
         if (player3.GetComponent<FollowThePath>().waypointIndex == player3.GetComponent<FollowThePath>().waypoints.Length)
         {
             whoWinsTextShadow.SetActive(true);
             whoWinsTextShadow.GetComponent<Text>().text = "Player 3 Wins";
             gameOver = true;
+            backToMenuButton.SetActive(true);
         }
         if (player4.GetComponent<FollowThePath>().waypointIndex == player4.GetComponent<FollowThePath>().waypoints.Length)
         {
             whoWinsTextShadow.SetActive(true);
             whoWinsTextShadow.GetComponent<Text>().text = "Player 4 Wins";
             gameOver = true;
+            backToMenuButton.SetActive(true);
         }
     }
     public void UseLadderGrabFromInventory()
@@ -755,7 +763,7 @@ public class GameControl : MonoBehaviour
         var items = player1InventoryScript.GetInventory().GetItemList();
         Debug.Log("💾 Items in Player 1 inventory before saving: " + items.Count);
         foreach (var item in items)
-        Debug.Log("    🔸 " + item.itemType);
+            Debug.Log("    🔸 " + item.itemType);
 
 
         string inv1 = player1InventoryScript.GetInventory().ToJson();
@@ -818,6 +826,11 @@ public class GameControl : MonoBehaviour
 
         Debug.Log("✅ Game Loaded!");
         Debug.Log("🧪 P1 Items after load: " + player1InventoryScript.GetInventory().GetItemList().Count);
+    }
 
+    public void BackToMenu()
+    {
+        Time.timeScale = 1f; // In case the game is paused
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // restart current scene
     }
 }

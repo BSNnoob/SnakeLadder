@@ -26,7 +26,7 @@ public class DiceScript : MonoBehaviour
         diceVelocity = rb.linearVelocity;
         Debug.Log("Dice Update running");
 
-        if (Input.GetKeyDown(KeyCode.Space) && !IsPlayerMoving() && canRoll)
+        if ((Input.GetKeyDown(KeyCode.Space) && !IsPlayerMoving() && canRoll) || (GameControl.useDoubleDice && Input.GetKeyDown(KeyCode.Space)))
         {
             Debug.Log("Space pressed, rolling dice");
             DiceCheckZoneScript.dice1 = 0;

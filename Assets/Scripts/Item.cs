@@ -1,22 +1,40 @@
 using UnityEngine;
 
-public class Item 
+public class Item
 {
-    public enum ItemType {
-        DoubleDice,
+    public enum ItemType
+    {
         AvoidSnake,
-        LadderGrab,
+        DoubleDice,
+        LadderGrab
     }
 
     public ItemType itemType;
 
-    public Sprite GetSprite(){
-        switch(itemType){
-        default:
-        case ItemType.AvoidSnake: return ItemAssets.Instance.avoidSnakeSprite;
-        case ItemType.DoubleDice: return ItemAssets.Instance.doubleDiceSprite;
-        case ItemType.LadderGrab: return ItemAssets.Instance.ladderGrabSprite;
+    public string GetTitle()
+    {
+        switch (itemType)
+        {
+            case ItemType.AvoidSnake: return "Avoid Snake";
+            case ItemType.DoubleDice: return "Double Dice";
+            case ItemType.LadderGrab: return "Ladder Grab";
+            default: return "Unknown Item";
         }
     }
 
+    public string GetDescription()
+    {
+        switch (itemType)
+        {
+            case ItemType.AvoidSnake: return "Prevents a snake from biting you once.";
+            case ItemType.DoubleDice: return "Rolls two dice instead of one.";
+            case ItemType.LadderGrab: return "Pulls you to the nearest pipe.";
+            default: return "";
+        }
+    }
+
+    public Sprite GetSprite()
+    {
+        return ItemAssets.Instance.GetSprite(itemType);
+    }
 }

@@ -17,37 +17,49 @@ public class player4Inventory : MonoBehaviour
         return inventory;
     }
 
-    private void UseItem(Item item){
-        // ✅ Prevent using item if it's not this player's turn
-int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
+    private void UseItem(Item item)
+    {
+        int currentTurn = GameObject.Find("GameControl").GetComponent<GameControl>().whosTurn;
 
-if (currentTurn != playerNumber)
-{
-    Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
-    return;
-}
+        if (currentTurn != playerNumber)
+        {
+            Debug.Log($"Player {playerNumber} tried to use an item on Player {currentTurn}'s turn — Not allowed.");
+            return;
+        }
+
+        GameObject player = GameObject.Find($"Player{playerNumber}");
+        GameControl gameControl = GameObject.Find("GameControl").GetComponent<GameControl>();
 
         switch (item.itemType)
         {
             case Item.ItemType.DoubleDice:
                 GameControl.useDoubleDice = true;
                 spawnedDice2 = Instantiate(dice2Prefab, new Vector3(2, 2, 0), Quaternion.identity);
-                GameObject.Find("GameControl").GetComponent<GameControl>().SetDice2Instance(spawnedDice2);
+                gameControl.SetDice2Instance(spawnedDice2);
                 inventory.RemoveItem(item);
                 inventory.OnItemListChanged?.Invoke();
                 break;
+
             case Item.ItemType.AvoidSnake:
                 GameControl.useAvoidSnake = true;
                 inventory.RemoveItem(item);
                 inventory.OnItemListChanged?.Invoke();
-                Debug.Log($"avoid snake {GameControl.useAvoidSnake}");
+                Debug.Log($"✅ Avoid Snake activated: {GameControl.useAvoidSnake}");
                 break;
-            case Item.ItemType.LadderGrab:
-                GameObject player = GameObject.Find($"Player{playerNumber}");
-                GameObject.Find("GameControl").GetComponent<GameControl>().UseLadderGrab(player);
 
-                inventory.RemoveItem(item);
-                inventory.OnItemListChanged?.Invoke();
+            case Item.ItemType.LadderGrab:
+                if (!gameControl.IsLadderNearby(player))
+                {
+                    Debug.Log("🚫 LadderGrab not used: no ladder nearby.");
+                    return;
+                }
+
+                bool used = gameControl.UseLadderGrab(player);
+                if (used)
+                {
+                    inventory.RemoveItem(item);
+                    inventory.OnItemListChanged?.Invoke();
+                }
                 break;
         }
     }
